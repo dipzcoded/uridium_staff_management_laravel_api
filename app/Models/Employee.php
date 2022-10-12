@@ -4,17 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\User;
-use App\Models\EmployeeBioData;
-use App\Models\EmployeeAcademicRecords;
-use App\Models\EmployeeGuarantors;
-use App\Models\EmployeeNextOfKins;
+
 
 class Employee extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['staffId', 'employmentDate', 'sterlingBankEmail', 'position', 'department','grade','supervisor','bankAcctName','bankAcctNumber','bankBvn'];
+    protected $fillable = ['staff_id', 'user_id', 'employment_date', 'sterling_bank_email', 'position', 'department','grade','supervisor','bank_acct_name','bank_acct_number','bank_bvn'];
 
 
     public function user()
@@ -24,21 +20,21 @@ class Employee extends Model
 
     public function bioData()
     {
-        return $this->hasOne(EmployeeBioData::class,'employeeId','id');
+        return $this->hasOne(EmployeeBioData::class);
     }
 
     public function academicRecords()
     {
-        return $this->hasMany(EmployeeAcademicRecords::class,'employeeId','id');
+        return $this->hasMany(EmployeeAcademicRecords::class);
     }
 
     public function nextOfKins()
     {
-        return $this->hasMany(EmployeeNextOfKins::class,'employeeId','id');
+        return $this->hasMany(EmployeeNextOfKins::class);
     }
 
     public function guarantors()
     {
-        return $this->hasMany(EmployeeGuarantors::class,'employeeId','id');
+        return $this->hasMany(EmployeeGuarantors::class);
     }
 }

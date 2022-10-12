@@ -15,18 +15,18 @@ return new class extends Migration
     {
         Schema::create('employees', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('userId');
-            $table->string('staffId')->unique()->nullable();
-            $table->date('employmentDate')->nullable();
-            $table->string('sterlingBankEmail')->unique()->nullable();
+            $table->unsignedInteger('user_id')->unique();
+            $table->string('staff_id')->unique()->nullable();
+            $table->date('employment_date')->nullable();
+            $table->string('sterling_bank_email')->unique()->nullable();
             $table->string('position')->nullable();
             $table->string('department')->nullable();
             $table->string('grade')->nullable();
             $table->string('supervisor')->nullable();
-            $table->string('bankAcctName')->nullable();
-            $table->string('bankAcctNumber')->nullable();
-            $table->string('bankBvn')->nullable();
-            $table->foreign('userId')->references('id')->on('users')->onDelete('cascade');
+            $table->string('bank_acct_name')->nullable();
+            $table->string('bank_acct_number')->nullable();
+            $table->string('bank_bvn')->nullable();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

@@ -15,11 +15,11 @@ return new class extends Migration
     {
         Schema::create('employee_next_of_kins', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('employeeId');
+            $table->unsignedInteger('employee_id')->index();
             $table->string('name')->nullable();
-            $table->string('phoneNumber')->nullable();
+            $table->string('phone_number')->nullable();
             $table->string('nin')->nullable();
-            $table->foreign('employeeId')->references('id')->on('employees')->onDelete('cascade');
+            $table->foreign('employee_id')->references('id')->on('employees')->onDelete('cascade');
             $table->timestamps();
         });
     }

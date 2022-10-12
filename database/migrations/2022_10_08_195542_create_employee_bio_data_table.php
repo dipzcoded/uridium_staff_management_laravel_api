@@ -15,16 +15,16 @@ return new class extends Migration
     {
         Schema::create('employee_bio_data', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('employeeId');
-            $table->string('personalEmail')->unique();
+            $table->unsignedInteger('employee_id')->unique();
+            $table->string('personal_email')->unique();
             $table->string('sex')->nullable();
-            $table->date('dateOfBirth')->nullable();
-            $table->string('stateOfOrigin')->nullable();
-            $table->string('maritalStatus')->nullable();
+            $table->date('date_of_birth')->nullable();
+            $table->string('state_of_origin')->nullable();
+            $table->string('marital_status')->nullable();
             $table->string('religion')->nullable();
-            $table->bigInteger('phoneNumber')->nullable();
-            $table->string('homeAddress')->nullable();
-            $table->foreign('employeeId')->references('id')->on('employees')->onDelete('cascade');
+            $table->string('phone_number')->nullable();
+            $table->string('home_address')->nullable();
+            $table->foreign('employee_id')->references('id')->on('employees')->onDelete('cascade');
             $table->timestamps();
         });
     }
