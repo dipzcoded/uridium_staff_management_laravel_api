@@ -19,7 +19,7 @@ class EmployeeAcademicRecordsResource extends JsonResource
             'courseOfStudy' => $this->course_of_study,
             'intitution' => $this->intitution,
             'qualification' => $this->qualification,
-            'year_of_grad' => $this->year_of_grad
+            'yearOfGraduation' => $this->year_of_grad
         ];
     }
 }
