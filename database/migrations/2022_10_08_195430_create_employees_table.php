@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('employees', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('user_id')->unique();
-            $table->string('staff_id')->unique()->nullable();
+            $table->string('staff_id')->nullable();
             $table->date('employment_date')->nullable();
             $table->string('sterling_bank_email')->unique()->nullable();
             $table->string('position')->nullable();

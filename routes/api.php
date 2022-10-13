@@ -24,7 +24,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
-Route::prefix('v1')->name('api.v1.')->namespace('Api\V1')->group(function(){
+Route::prefix('v1')->name('api.v1.')->group(function(){
     // Test Routes
     Route::get('/test', function(){
         return response()->json(['status' => 'OK'],200);

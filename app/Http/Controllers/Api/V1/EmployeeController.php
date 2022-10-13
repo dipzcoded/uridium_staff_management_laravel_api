@@ -3,10 +3,18 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\EmployeeResource;
+use App\Models\Employee;
+use App\Models\User;
+use App\Traits\HttpResponses;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class EmployeeController extends Controller
 {
+
+    use HttpResponses;
+
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +22,8 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-        //
+        // returning back all employees from the Employee Model
+        return $this->success(EmployeeResource::collection(Employee::all()));
     }
 
     /**
@@ -26,6 +35,48 @@ class EmployeeController extends Controller
     public function store(Request $request)
     {
         //
+        // store values from the req.body
+        $body = $request->all();
+
+        // checking if the email aleady exist in the User Model
+        $employeeUser = User::where('email',$body['email'])->get();
+
+        if($employeeUser)
+        {
+            return $this->error(null,"user with email already exists",401);
+        }
+
+        // create user
+        $newUser = User::create([
+            'name' => $body['name'],
+            'email' => $body['email'],
+            'password' => Hash::make('uwelcome101')
+        ]);
+
+        // create a new employee and linking it with the user 
+        $newEmployee = Employee::make([
+            'staff_id' => $body['staff_id'],
+            'user_id' => $newUser->id,
+            'employment_date' => $body['employment_date'],
+            'sterling_bank_email' => $body['sterling_bank_email'],
+            'position' => $body['position'],
+            'department' => $body['department'],
+            'grade' => $body['grade'],
+            'supervisor' => $body['supervisor'],
+            'bank_acct_name' => $body['bank_acct_name'],
+            'bank_acct_number' => $body['bank_acct_number'],
+            'bank_bvn' => $body['bank_bvn']
+        ]);
+
+        // saving it to the database
+        $newEmployee->save();
+    
+        // returning back a json response to the client
+        return $this->success(
+            new EmployeeResource($newEmployee),
+            'employee created successfully!'
+        );
+
     }
 
     /**
@@ -36,7 +87,17 @@ class EmployeeController extends Controller
      */
     public function show($id)
     {
-        //
+         // Find user by id 
+        $employee = Employee::find($id);
+
+          // first checking if the employee exists
+        if(!$employee)
+        {
+            return $this->error(null,'no employee found',404);
+        }
+
+        // return a json response
+        return $this->success(new EmployeeResource($employee));       
     }
 
     /**
@@ -48,7 +109,20 @@ class EmployeeController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        // Find user by id 
+        $employee = Employee::find($id);
+
+        // first checking if the employee exists
+        if(!$employee)
+        {
+            return $this->error(null,'no employee found',404);
+        }
+
+        // den update the employee details
+        $employee->update($request->all());
+
+        // return a json response
+        return $this->success(new EmployeeResource($employee));    
     }
 
     /**
@@ -59,6 +133,29 @@ class EmployeeController extends Controller
      */
     public function destroy($id)
     {
-        //
+        //find employee by id
+        $employee = Employee::find($id);
+
+        // check if it employee exists
+        if(!$employee)
+        {
+            return $this->error(null,'no employee found',404);
+        }
+
+        // getting user by employee id from the user model
+        $employeeUser = User::find($employee->user_id);
+
+        // checking if the employee user_id col matches with the user id
+        if($employeeUser->id != $employee->user_id)
+        {
+            return $this->error(null,'employee user doesnt match with the user',404);
+        }
+
+        // delete the user first which will automatically delete the employee of the particular user due to "CASCADE"
+        $employeeUser->delete();
+
+        // returning nothing back as response
+        return $this->success(null,null,204);  
+
     }
 }

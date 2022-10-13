@@ -18,7 +18,7 @@ class EmployeeUserResource extends JsonResource
             'id' => (string) $this->id,
             'name' => $this->name,
             'email' => $this->email,
-            'isAdmin' => $this->is_admin,
+            'isAdmin' => $this->is_admin == 0 ? false : true,
             'createdAt' => $this->created_at,
             'updatedAt' => $this->updated_at
         ];
