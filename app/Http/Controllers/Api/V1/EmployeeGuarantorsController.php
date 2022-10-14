@@ -85,7 +85,7 @@ class EmployeeGuarantorsController extends Controller
         }
 
         if($employee->id != $employeeGuarantor->employee_id){
-            return $this->error(null,"guarantor is not meant for employee",401);
+            return $this->error(null,"guarantor is not meant for employee",403);
         }
 
         return $this->success(new EmployeeGuarantorsResource($employeeGuarantor));
@@ -120,7 +120,7 @@ class EmployeeGuarantorsController extends Controller
             return $this->error(null,"guarantor not associated with the employee",403);
         }
 
-        $employee->guarantors()->update($request->all());
+        $employeeGuarantor->update($request->all());
 
         return $this->success(new EmployeeResource($employee));
 
@@ -132,8 +132,32 @@ class EmployeeGuarantorsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($employeeId, $guarantorId)
     {
         //
+
+        $employee = Employee::find($employeeId);
+
+        if(!$employee)
+        {
+            return $this->error(null,"employee not found",404);
+        }
+
+        $employeeGuarantor = EmployeeGuarantors::find($guarantorId);
+
+        if(!$employeeGuarantor)
+        {
+            return $this->error(null,"employee guarantor not found",404);
+        }
+
+        if($employeeGuarantor->employee_id != $employee->id)
+        {
+            return $this->error(null,"guarantor not associated with the employee",403);
+        }
+
+        $employeeGuarantor->delete();
+
+        $this->success(null,null,204);
+
     }
 }

@@ -109,7 +109,7 @@ class EmployeeBioDataController extends Controller
         // checking if the biodata employee_id is the same with the employee id
         if($employeeBioData->employee_id != $employee->id)
         {
-            return $this->error(null,"employee bio data doesnt match the employee id",404);
+            return $this->error(null,"employee bio data doesnt match the employee id",403);
         }
 
         // return a json response
@@ -147,11 +147,11 @@ class EmployeeBioDataController extends Controller
         //  checking if the biodata employee_id is the same with the employee id
         if($employeeBioData->employee_id != $employee->id)
         {
-            return $this->error(null,"employee bio data doesnt match the employee id",404);
+            return $this->error(null,"employee bio data doesnt match the employee id",403);
         }
 
         // updating employee bio data
-        $employee->bioData()->update($request->all());
+        $employeeBioData->update($request->all());
 
         // returning a json response
         return $this->success(new EmployeeResource($employee));
@@ -188,11 +188,11 @@ class EmployeeBioDataController extends Controller
         //  checking if the biodata employee_id is the same with the employee id
         if($employeeBioData->employee_id != $employee->id)
         {
-            return $this->error(null,"employee bio data doesnt match the employee id",404);
+            return $this->error(null,"employee bio data doesnt match the employee id",403);
         }
 
         // deleting employee bio data 
-        $employee->bioData()->delete();
+        $employeeBioData->delete();
 
         // return nothing back
         return $this->success(null,null,204);

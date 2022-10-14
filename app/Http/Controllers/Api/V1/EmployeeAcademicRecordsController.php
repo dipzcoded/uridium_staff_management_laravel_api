@@ -130,7 +130,7 @@ class EmployeeAcademicRecordsController extends Controller
         // checking if it matches with the employee id
         if($employeeAcademicRecord->employee_id != $employee->id)
         {
-            return $this->error(null,"the academic record is not for the employee");
+            return $this->error(null,"the academic record is not for the employee",403);
         }
 
         // updating the employee academic record 
@@ -170,7 +170,7 @@ class EmployeeAcademicRecordsController extends Controller
         // checking if the employee academic record matches with the employee
         if($employeeAcademicRecord->employee_id != $employee->id)
         {
-            return $this->error(null,"the academic record is not for the employee");
+            return $this->error(null,"the academic record is not for the employee",403);
         }
 
         // delete the academic record
