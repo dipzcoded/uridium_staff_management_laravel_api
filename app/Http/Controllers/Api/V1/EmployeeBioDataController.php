@@ -37,7 +37,7 @@ class EmployeeBioDataController extends Controller
         // checking if bio data exists
         if(!$employeeBioData)
         {
-            return $this->error(null,"employee doesnt not exist",404);
+            return $this->error(null,"employee biodata doesnt not exist",404);
         }
 
         // return a json response
