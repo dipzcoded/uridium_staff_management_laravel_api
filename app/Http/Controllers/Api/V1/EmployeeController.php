@@ -8,12 +8,18 @@ use App\Models\Employee;
 use App\Models\User;
 use App\Traits\HttpResponses;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 
 class EmployeeController extends Controller
 {
 
     use HttpResponses;
+
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum');
+    }
 
     /**
      * Display a listing of the resource.
@@ -22,8 +28,14 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-        // returning back all employees from the Employee Model
+            $response = Gate::inspect('view',Employee::class);
+            if($response->allowed())
+            {
+             // returning back all employees from the Employee Model
         return $this->success(EmployeeResource::collection(Employee::all()));
+            }else {
+              return  $this->error(null,$response->message(),403);
+            }  
     }
 
     /**
@@ -34,12 +46,17 @@ class EmployeeController extends Controller
      */
     public function store(Request $request)
     {
-        //
-        // store values from the req.body
+
+        $response = Gate::inspect('create',Employee::class);
+
+        if($response->allowed())
+        {
+
+            // store values from the req.body
         $body = $request->all();
 
         // checking if the email aleady exist in the User Model
-        $employeeUser = User::where('email',$body['email'])->get();
+        $employeeUser = User::where('email',$body['email'])->first();
 
         if($employeeUser)
         {
@@ -77,6 +94,13 @@ class EmployeeController extends Controller
             'employee created successfully!'
         );
 
+        }else {
+            return $this->error(null,$response->message(),403);
+        }
+
+        //
+        
+
     }
 
     /**
@@ -87,17 +111,27 @@ class EmployeeController extends Controller
      */
     public function show($id)
     {
-         // Find user by id 
+
+        $response = Gate::inspect('view', Employee::class);
+
+        if($response->allowed())
+        {
+                  // Find user by id 
         $employee = Employee::find($id);
 
-          // first checking if the employee exists
-        if(!$employee)
-        {
-            return $this->error(null,'no employee found',404);
+        // first checking if the employee exists
+      if(!$employee)
+      {
+          return $this->error(null,'no employee found',404);
+      }
+
+      // return a json response
+      return $this->success(new EmployeeResource($employee));       
+        }else{
+            return $this->error(null,$response->message(),403);
         }
 
-        // return a json response
-        return $this->success(new EmployeeResource($employee));       
+       
     }
 
     /**
@@ -109,6 +143,9 @@ class EmployeeController extends Controller
      */
     public function update(Request $request, $id)
     {
+
+       
+
         // Find user by id 
         $employee = Employee::find($id);
 
@@ -118,11 +155,20 @@ class EmployeeController extends Controller
             return $this->error(null,'no employee found',404);
         }
 
-        // den update the employee details
+        $response = Gate::inspect('update',$employee);
+
+        if($response->allowed())
+        {
+              // den update the employee details
         $employee->update($request->all());
 
         // return a json response
-        return $this->success(new EmployeeResource($employee));    
+        return $this->success(new EmployeeResource($employee));   
+        }else {
+            return $this->error(null,$response->message(),403);
+        }
+
+       
     }
 
     /**
@@ -142,7 +188,11 @@ class EmployeeController extends Controller
             return $this->error(null,'no employee found',404);
         }
 
-        // getting user by employee id from the user model
+        $response = Gate::inspect('delete',$employee);
+
+        if($response->allowed())
+        {
+             // getting user by employee id from the user model
         $employeeUser = User::find($employee->user_id);
 
         // checking if the employee user_id col matches with the user id
@@ -156,6 +206,8 @@ class EmployeeController extends Controller
 
         // returning nothing back as response
         return $this->success(null,null,204);  
-
+        }else{
+            return $this->error(null,$response->message(),403);
+        }
     }
 }

@@ -1,11 +1,11 @@
 <?php
 
+use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\EmployeeAcademicRecordsController;
 use App\Http\Controllers\Api\V1\EmployeeBioDataController;
 use App\Http\Controllers\Api\V1\EmployeeController;
 use App\Http\Controllers\Api\V1\EmployeeGuarantorsController;
 use App\Http\Controllers\Api\V1\EmployeeNextOfKinsController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,11 +18,6 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 
 Route::prefix('v1')->name('api.v1.')->group(function(){
     // Test Routes
@@ -40,4 +35,14 @@ Route::prefix('v1')->name('api.v1.')->group(function(){
     Route::apiResource('employee.next-of-kins',EmployeeNextOfKinsController::class);
     // Employee Guarantors Routes
     Route::apiResource('employee.guarantors',EmployeeGuarantorsController::class);
+
+    // Auth Routes
+    Route::post('auth/register/admin',[AuthController::class,'register']);
+    Route::post('auth/login',[AuthController::class,'login']);
+    Route::post("auth/logout",[AuthController::class,'logout']);
+});
+
+Route::fallback(function()
+{
+    return response()->json(['message' => 'not found'],404);
 });
