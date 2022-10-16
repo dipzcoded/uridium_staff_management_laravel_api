@@ -9,6 +9,7 @@ use App\Models\Employee;
 use App\Models\EmployeeAcademicRecords;
 use App\Traits\HttpResponses;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class EmployeeAcademicRecordsController extends Controller
 {
@@ -27,7 +28,12 @@ class EmployeeAcademicRecordsController extends Controller
      */
     public function index($employeeId)
     {
-        // fetching employee by employeeLid param
+
+        $response = Gate::inspect('viewAny',EmployeeAcademicRecords::class);
+
+        if($response->allowed())
+        {
+                  // fetching employee by employeeLid param
         $employee = Employee::find($employeeId);
 
         // checking if the employee exists
@@ -35,11 +41,13 @@ class EmployeeAcademicRecordsController extends Controller
         {
             return $this->error(null,"employee not found",404);
         }
-
-       
-
         // returning a json response 
         return $this->success(EmployeeAcademicRecordsResource::collection($employee->academicRecords));
+        }else{
+       return $this->error(null,$response->message(),403);
+        }
+
+       
     }
 
     /**
@@ -50,7 +58,12 @@ class EmployeeAcademicRecordsController extends Controller
      */
     public function store(Request $request, $employeeId)
     {
-        // finding the employee by employeeId param
+
+        $response = Gate::inspect('create',EmployeeAcademicRecords::class);
+
+        if($response->allowed())
+        {
+             // finding the employee by employeeId param
         $employee = Employee::find($employeeId);
 
         // checking if it exists
@@ -64,6 +77,11 @@ class EmployeeAcademicRecordsController extends Controller
 
         // returning a json response
         return $this->success(new EmployeeResource($employee));
+        }else {
+            return $this->error(null,$response->message(),403);
+        }
+
+       
     }
 
     /**
@@ -74,8 +92,12 @@ class EmployeeAcademicRecordsController extends Controller
      */
     public function show($employeeId, $academicRecordId)
     {
-        //
-        // finding employee by employeeId param
+
+        $response = Gate::inspect('view',EmployeeAcademicRecords::class);
+
+        if($response->allowed())
+        {
+             // finding employee by employeeId param
         $employee = Employee::find($employeeId);
 
         // checking if the employee exists
@@ -102,6 +124,10 @@ class EmployeeAcademicRecordsController extends Controller
 
         // returning a json response
         return $this->success(new EmployeeAcademicRecordsResource($employeeAcademicRecord));
+        }else{
+            return $this->error(null,$response->message(),403);
+        }
+       
     }
 
     /**
@@ -113,8 +139,12 @@ class EmployeeAcademicRecordsController extends Controller
      */
     public function update(Request $request, $employeeId, $academicRecordId)
     {
-        //
-        // finding employee by employeeId param
+        $response = Gate::inspect('update',EmployeeAcademicRecords::class);
+
+        if($response->allowed())
+        {
+
+             // finding employee by employeeId param
         $employee = Employee::find($employeeId);
 
         // checking if it exists
@@ -144,6 +174,11 @@ class EmployeeAcademicRecordsController extends Controller
         // returning json response
         return $this->success(new EmployeeResource($employee));
 
+
+        }else {
+            return $this->error(null,$response->message(),403);
+        }
+       
     }
 
     /**
@@ -154,7 +189,13 @@ class EmployeeAcademicRecordsController extends Controller
      */
     public function destroy($employeeId, $academicRecordId)
     {
-        // finding the employee by employeeId
+
+        $response = Gate::inspect('delete',EmployeeAcademicRecords::class);
+
+        if($response->allowed())
+        {
+
+                    // finding the employee by employeeId
         $employee = Employee::find($employeeId);
 
         // checking if it exists
@@ -183,5 +224,9 @@ class EmployeeAcademicRecordsController extends Controller
 
         // return a json response
         return $this->success(null,null,204);
+
+        }else {
+            return $this->error(null,$response->message(),403);
+        }
     }
 }

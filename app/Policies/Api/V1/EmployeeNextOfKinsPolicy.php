@@ -2,15 +2,13 @@
 
 namespace App\Policies\Api\V1;
 
-use App\Models\Employee;
+use App\Models\EmployeeNextOfKins;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Auth\Access\Response;
 
-class EmployeePolicy
+class EmployeeNextOfKinsPolicy
 {
-    use HandlesAuthorization;
-
     use HandlesAuthorization;
 
     /**
@@ -25,19 +23,16 @@ class EmployeePolicy
         return $user->role == "HR" || $user->role == "ADMIN" ? Response::allow() : Response::deny('You do not have access permission',403);
     }
 
-
-
     /**
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Employee  $employee
+     * @param  \App\Models\EmployeeNextOfKins  $employeeNextOfKins
      * @return \Illuminate\Auth\Access\Response|bool
      */
     public function view(User $user)
     {
         //
-
         return $user->role == "HR" || $user->role == "ADMIN" ? Response::allow() : Response::deny('You do not have access permission',403);
     }
 
@@ -50,38 +45,32 @@ class EmployeePolicy
     public function create(User $user)
     {
         //
-        return $user->role == "HR" || $user->role == "ADMIN" ? Response::allow() : Response::deny("You do not have access permission",403);
+        return $user->role == "HR" || $user->role == "ADMIN" ? Response::allow() : Response::deny('You do not have access permission',403);
     }
 
     /**
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Employee  $employee
+     * @param  \App\Models\EmployeeNextOfKins  $employeeNextOfKins
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, Employee $employee)
+    public function update(User $user)
     {
         //
-        return $user->role == "HR" || $user->role == "ADMIN" ? Response::allow() : Response::deny("You do not have access permission",403);
+        return $user->role == "HR" || $user->role == "ADMIN" ? Response::allow() : Response::deny('You do not have access permission',403);
     }
 
     /**
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Employee  $employee
+     * @param  \App\Models\EmployeeNextOfKins  $employeeNextOfKins
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, Employee $employee)
+    public function delete(User $user)
     {
         //
-        return $user->role == "HR" || $user->role == "ADMIN" ? Response::allow() : Response::deny("You do not have access permission",403);
-    }
-
-    public function restoreActive(User $user, Employee $employee)
-    {
-        //
-        return $user->role == "HR" || $user->role == "ADMIN" ? Response::allow() : Response::deny("You do not have access permission",403);
+        return $user->role == "HR" || $user->role == "ADMIN" ? Response::allow() : Response::deny('You do not have access permission',403);
     }
 }

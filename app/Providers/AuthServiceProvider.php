@@ -5,6 +5,14 @@ namespace App\Providers;
 // use Illuminate\Support\Facades\Gate;
 
 use App\Models\Employee;
+use App\Models\EmployeeAcademicRecords;
+use App\Models\EmployeeBioData;
+use App\Models\EmployeeGuarantors;
+use App\Models\EmployeeNextOfKins;
+use App\Policies\Api\V1\EmployeeAcademicRecordsPolicy;
+use App\Policies\Api\V1\EmployeeBioDataPolicy;
+use App\Policies\Api\V1\EmployeeGuarantorsPolicy;
+use App\Policies\Api\V1\EmployeeNextOfKinsPolicy;
 use App\Policies\Api\V1\EmployeePolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
@@ -17,7 +25,11 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         // 'App\Models\Model' => 'App\Policies\ModelPolicy',
-        Employee::class => EmployeePolicy::class
+        Employee::class => EmployeePolicy::class,
+        EmployeeAcademicRecords::class => EmployeeAcademicRecordsPolicy::class,
+        EmployeeBioData::class => EmployeeBioDataPolicy::class,
+        EmployeeGuarantors::class => EmployeeGuarantorsPolicy::class,
+        EmployeeNextOfKins::class => EmployeeNextOfKinsPolicy::class
     ];
 
     /**

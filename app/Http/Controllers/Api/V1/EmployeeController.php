@@ -28,7 +28,9 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-            $response = Gate::inspect('view',Employee::class);
+        
+            $response = Gate::inspect('viewAny',Employee::class);
+
             if($response->allowed())
             {
              // returning back all employees from the Employee Model
@@ -201,11 +203,63 @@ class EmployeeController extends Controller
             return $this->error(null,'employee user doesnt match with the user',404);
         }
 
-        // delete the user first which will automatically delete the employee of the particular user due to "CASCADE"
-        $employeeUser->delete();
+    // change the is_active state of the employee to false
+    $employee->update([
+        'is_active' => false
+    ]);
+
+    $employee->user()->update([
+        'is_active' => false
+    ]);
+        
 
         // returning nothing back as response
-        return $this->success(null,null,204);  
+        return $this->success(new EmployeeResource($employee),null,200);  
+        }else{
+            return $this->error(null,$response->message(),403);
+        }
+    }
+
+    public function restoreEmployee($id)
+    {
+        //find employee by id
+        $employee = Employee::find($id);
+
+        // check if it employee exists
+        if(!$employee)
+        {
+            return $this->error(null,'no employee found',404);
+        }
+
+        $response = Gate::inspect('restoreActive',$employee);
+
+        if($employee->is_active)
+        {
+            return $this->error(null,"employee is already active...restoring not needed",400);
+        }
+
+        if($response->allowed())
+        {
+             // getting user by employee id from the user model
+        $employeeUser = User::find($employee->user_id);
+
+        // checking if the employee user_id col matches with the user id
+        if($employeeUser->id != $employee->user_id)
+        {
+            return $this->error(null,'employee user doesnt match with the user',404);
+        }
+
+        // change the is_active state of the employee to false
+        $employee->update([
+            'is_active' => true
+        ]);
+
+        $employee->user()->update([
+            'is_active' => true
+        ]);
+
+        // returning nothing back as response
+        return $this->success(new EmployeeResource($employee),null,200);  
         }else{
             return $this->error(null,$response->message(),403);
         }

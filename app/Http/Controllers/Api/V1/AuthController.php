@@ -57,12 +57,20 @@ class AuthController extends Controller
         // finding user by email
         $user = User::where('email',$request->email)->first();
 
-         // issue a token
+        // checking if the user is active
+        if($user->is_active)
+        {
+             // issue a token
          return $this->success([
             'user' => $user,
             'token' => $user->createToken('API Token of ' . $user->email)->plainTextToken,
             'token_type' => 'Bearer'
         ]);
+        }else {
+            return $this->error(null,"cannot not login...ask admin to give you acccess",403);
+        }
+
+        
 
     }
 

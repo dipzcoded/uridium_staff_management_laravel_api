@@ -27,6 +27,10 @@ Route::prefix('v1')->name('api.v1.')->group(function(){
 
     // Employee Routes
     Route::apiResource('employee',EmployeeController::class);
+
+    // update employee active state
+    Route::patch('employee/{id}/restore',[EmployeeController::class,'restoreEmployee']);
+
     // Employee BioData Routes
     Route::apiResource('employee.biodata',EmployeeBioDataController::class);
     // Employee Academic Records Routes

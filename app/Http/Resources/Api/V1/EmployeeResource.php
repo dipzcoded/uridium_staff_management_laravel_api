@@ -33,6 +33,7 @@ class EmployeeResource extends JsonResource
                 'bankAcctName' => $this->bank_acct_name,
                 'bankAcctNumber' => $this->bank_acct_number,
                 'bankBvn' => $this->bank_bvn,
+                'is_active' => $this->is_active == 0 ? false : true,
                 'createdAt' => $this->created_at,
                 'updatedAt' => $this->updated_at
             ],
