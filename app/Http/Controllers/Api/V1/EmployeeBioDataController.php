@@ -9,6 +9,7 @@ use App\Models\Employee;
 use App\Models\EmployeeBioData;
 use App\Traits\HttpResponses;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class EmployeeBioDataController extends Controller
 {
@@ -28,7 +29,12 @@ class EmployeeBioDataController extends Controller
      */
     public function index($employeeId)
     {
-        // getting employee by id
+
+        $response = Gate::inspect('viewAny',EmployeeBioData::class);
+
+        if($response->allowed())
+        {
+             // getting employee by id
         $employee = Employee::find($employeeId);
 
         // checking if the employee exists
@@ -48,6 +54,11 @@ class EmployeeBioDataController extends Controller
 
         // return a json response
         return $this->success(new EmployeeBioDataResource($employeeBioData));
+        }else{
+            return $this->error(null,$response->message(),403);
+        }
+
+       
 
         // return $employeeBioData;
     }
@@ -60,7 +71,12 @@ class EmployeeBioDataController extends Controller
      */
     public function store(Request $request, $employeeId)
     {
-        // finding employee by employee id
+
+        $response = Gate::inspect('create',EmployeeBioData::class);
+
+        if($response->allowed())
+        {
+             // finding employee by employee id
         $employee = Employee::find($employeeId);
 
 
@@ -84,6 +100,11 @@ class EmployeeBioDataController extends Controller
 
         // returning a json response
         return $this->success(new EmployeeResource($employee));
+        }else{
+            return $this->error(null,$response->message(),403);
+        }
+
+       
     }
 
     /**
@@ -94,7 +115,11 @@ class EmployeeBioDataController extends Controller
      */
     public function show($employeeId, $bioDataId)
     {
-        // find employee by employeeId
+
+        $response = Gate::inspect('view',EmployeeBioData::class);
+
+        if($response->allowed()){
+             // find employee by employeeId
         $employee = Employee::find($employeeId);
 
         // checking if employee exist
@@ -120,7 +145,9 @@ class EmployeeBioDataController extends Controller
 
         // return a json response
         return $this->success(new EmployeeBioDataResource($employeeBioData),null);
-
+        }else{
+            return $this->error(null,$response->message(),403);
+        }
     }
 
     /**
@@ -132,7 +159,8 @@ class EmployeeBioDataController extends Controller
      */
     public function update(Request $request, $employeeId, $bioDataId)
     {
-        // find employee by employeeid
+
+             // find employee by employeeid
         $employee = Employee::find($employeeId);
 
         // checking if it exist
@@ -156,12 +184,18 @@ class EmployeeBioDataController extends Controller
             return $this->error(null,"employee bio data doesnt match the employee id",403);
         }
 
-        // updating employee bio data
+        $response = Gate::inspect('update',$employeeBioData);
+
+        if($response->allowed())
+        {
+            // updating employee bio data
         $employeeBioData->update($request->all());
 
         // returning a json response
         return $this->success(new EmployeeResource($employee));
-
+        }else{
+            return $this->error(null, $response->message(), 403);
+        }        
     }
 
     /**
@@ -172,8 +206,12 @@ class EmployeeBioDataController extends Controller
      */
     public function destroy($employeeId, $bioDataId)
     {
-        //
-        // find employee by employeeid
+
+        $response = Gate::inspect('delete',EmployeeBioData::class);
+
+        if($response->allowed())
+        {
+            // find employee by employeeid
         $employee = Employee::find($employeeId);
 
         // checking if it exist
@@ -202,6 +240,10 @@ class EmployeeBioDataController extends Controller
 
         // return nothing back
         return $this->success(null,null,204);
+        }else{
 
+        return $this->error(null,$response->message(),403);
+
+        }
     }
 }

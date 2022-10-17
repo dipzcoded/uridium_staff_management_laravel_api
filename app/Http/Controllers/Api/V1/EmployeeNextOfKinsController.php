@@ -9,6 +9,7 @@ use App\Models\Employee;
 use App\Models\EmployeeNextOfKins;
 use App\Traits\HttpResponses;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class EmployeeNextOfKinsController extends Controller
 {
@@ -28,7 +29,10 @@ class EmployeeNextOfKinsController extends Controller
      */
     public function index($employeeId)
     {
-        //
+
+        $response = Gate::inspect('viewAny', EmployeeNextOfKins::class);
+        if($response->allowed()){
+             //
         $employee = Employee::find($employeeId);
 
         if(!$employee)
@@ -37,6 +41,11 @@ class EmployeeNextOfKinsController extends Controller
         }
 
         return $this->success(EmployeeNextOfKinsResource::collection($employee->nextOfKins));
+        }else{
+        return $this->error(null, $response->message(), 403);
+        }
+
+       
     }
 
     /**
@@ -47,7 +56,12 @@ class EmployeeNextOfKinsController extends Controller
      */
     public function store(Request $request, $employeeId)
     {
-        //
+
+        $response = Gate::inspect('create', EmployeeNextOfKins::class);
+
+        if($response->allowed())
+        {
+             //
         $employee = Employee::find($employeeId);
 
         if(!$employee)
@@ -59,6 +73,9 @@ class EmployeeNextOfKinsController extends Controller
 
         return $this->success(new EmployeeResource($employee));
 
+        }else{
+            return $this->error(null, $response->message(), 403);
+        }
 
     }
 
@@ -70,7 +87,12 @@ class EmployeeNextOfKinsController extends Controller
      */
     public function show($employeeId, $nextOfKinsId)
     {
-        //
+
+        $response = Gate::inspect('view', EmployeeNextOfKins::class);
+
+        if($response->allowed())
+        {
+             //
         $employee = Employee::find($employeeId);
 
         if(!$employee)
@@ -89,6 +111,9 @@ class EmployeeNextOfKinsController extends Controller
         }
 
         return $this->success(new EmployeeNextOfKinsResource($employeeNextOfKin));
+        }else{
+        return $this->error(null, $response->message(), 403);
+        }
     }
 
     /**
@@ -101,26 +126,34 @@ class EmployeeNextOfKinsController extends Controller
     public function update(Request $request, $employeeId, $nextOfKinsId)
     {
         //
-        $employee = Employee::find($employeeId);
 
-        if(!$employee)
-        {
-            return $this->error(null,"employee not found",404);
+        $response = Gate::inspect('update',EmployeeNextOfKins::class);
+
+        if($response->allowed()){
+            $employee = Employee::find($employeeId);
+
+            if(!$employee)
+            {
+                return $this->error(null,"employee not found",404);
+            }
+    
+            $employeeNextOfKin = EmployeeNextOfKins::find($nextOfKinsId);
+            if(!$employeeNextOfKin)
+            {
+                return $this->error(null,"employee nextOfKin not found",404);
+            }
+    
+            if($employee->id != $employeeNextOfKin->employee_id){
+                return $this->error(null,"guarantor is not meant for employee",403);
+            }
+    
+            $employeeNextOfKin->update($request->all());
+            
+            return $this->success(new EmployeeResource($employee));
+        }else{
+            return $this->error(null, $response->message(), 403);
         }
 
-        $employeeNextOfKin = EmployeeNextOfKins::find($nextOfKinsId);
-        if(!$employeeNextOfKin)
-        {
-            return $this->error(null,"employee nextOfKin not found",404);
-        }
-
-        if($employee->id != $employeeNextOfKin->employee_id){
-            return $this->error(null,"guarantor is not meant for employee",403);
-        }
-
-        $employeeNextOfKin->update($request->all());
-        
-        return $this->success(new EmployeeResource($employee));
     }
 
     /**
@@ -132,26 +165,33 @@ class EmployeeNextOfKinsController extends Controller
     public function destroy($employeeId, $nextOfKinsId)
     {
         //
+        $response = Gate::inspect('delete', EmployeeNextOfKins::class);
 
-        $employee = Employee::find($employeeId);
-
-        if(!$employee)
+        if($response->allowed())
         {
-            return $this->error(null,"employee not found",404);
-        }
 
-        $employeeNextOfKin = EmployeeNextOfKins::find($nextOfKinsId);
-        if(!$employeeNextOfKin)
-        {
-            return $this->error(null,"employee nextOfKin not found",404);
-        }
+            $employee = Employee::find($employeeId);
 
-        if($employee->id != $employeeNextOfKin->employee_id){
-            return $this->error(null,"guarantor is not meant for employee",403);
-        }
+            if(!$employee)
+            {
+                return $this->error(null,"employee not found",404);
+            }
+    
+            $employeeNextOfKin = EmployeeNextOfKins::find($nextOfKinsId);
+            if(!$employeeNextOfKin)
+            {
+                return $this->error(null,"employee nextOfKin not found",404);
+            }
+    
+            if($employee->id != $employeeNextOfKin->employee_id){
+                return $this->error(null,"guarantor is not meant for employee",403);
+            }
+    
+            $employeeNextOfKin->delete();
+            return $this->success(null,null,204);
 
-        $employeeNextOfKin->delete();
-        return $this->success(null,null,204);
-
+        }else{
+            return $this->error(null, $response->message(), 403);
+        }  
     }
 }

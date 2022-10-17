@@ -22,7 +22,7 @@ class EmployeeBioDataResource extends JsonResource
             'stateOfOrigin' => $this->state_of_origin,
             'maritalStatus' => $this->marital_status,
             'religion' => $this->religion,
-            'phone_number' => $this->phone_number,
+            'phoneNumber' => $this->phone_number,
             'homeAddress' => $this->home_address,
             'createdAt' => $this->created_at,
             'updatedAt' => $this->updated_at

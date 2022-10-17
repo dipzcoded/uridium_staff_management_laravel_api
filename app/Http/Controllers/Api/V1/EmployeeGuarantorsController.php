@@ -9,6 +9,7 @@ use App\Models\Employee;
 use App\Models\EmployeeGuarantors;
 use App\Traits\HttpResponses;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class EmployeeGuarantorsController extends Controller
 {
@@ -28,8 +29,12 @@ class EmployeeGuarantorsController extends Controller
      */
     public function index($employeeId)
     {
-        //
-        // finding employee by employeeId param
+
+        $response = Gate::inspect('viewAny',EmployeeGuarantors::class);
+
+        if($response->allowed())
+        {
+             // finding employee by employeeId param
         $employee = Employee::find($employeeId);
 
         // checking if the employee exists
@@ -40,6 +45,9 @@ class EmployeeGuarantorsController extends Controller
 
         // returning json response
         return $this->success(EmployeeGuarantorsResource::collection($employee->guarantors));
+        }else{
+            $this->error(null, $response->message(), 403);
+        }
 
     }
 
@@ -51,8 +59,12 @@ class EmployeeGuarantorsController extends Controller
      */
     public function store(Request $request, $employeeId)
     {
-        //
-        // finding employee by employeeId param
+
+        $response = Gate::inspect('create',EmployeeGuarantors::class);
+
+        if($response->allowed())
+        {
+             // finding employee by employeeId param
         $employee = Employee::find($employeeId);
 
         // checking if the employee exists
@@ -66,6 +78,11 @@ class EmployeeGuarantorsController extends Controller
 
         // returning json response
         return $this->success(new EmployeeResource($employee));
+        }else{
+        return $this->error(null, $response->message(), 403);
+        }
+
+       
 
     }
 
@@ -78,24 +95,33 @@ class EmployeeGuarantorsController extends Controller
     public function show($employeeId, $guarantorId)
     {
         //
-        $employee = Employee::find($employeeId);
 
-        if(!$employee)
-        {
-            return $this->error(null,"employee not found",404);
+        $response = Gate::inspect('view', EmployeeGuarantors::class);
+        
+        if($response->allowed()){
+            $employee = Employee::find($employeeId);
+
+            if(!$employee)
+            {
+                return $this->error(null,"employee not found",404);
+            }
+    
+            $employeeGuarantor = EmployeeGuarantors::find($guarantorId);
+            if(!$employeeGuarantor)
+            {
+                return $this->error(null,"employee guarantor not found",404);
+            }
+    
+            if($employee->id != $employeeGuarantor->employee_id){
+                return $this->error(null,"guarantor is not meant for employee",403);
+            }
+    
+            return $this->success(new EmployeeGuarantorsResource($employeeGuarantor));
+        }else {
+            return $this->error(null,$response->message(),403);
         }
 
-        $employeeGuarantor = EmployeeGuarantors::find($guarantorId);
-        if(!$employeeGuarantor)
-        {
-            return $this->error(null,"employee guarantor not found",404);
-        }
-
-        if($employee->id != $employeeGuarantor->employee_id){
-            return $this->error(null,"guarantor is not meant for employee",403);
-        }
-
-        return $this->success(new EmployeeGuarantorsResource($employeeGuarantor));
+       
     }
 
     /**
@@ -106,9 +132,12 @@ class EmployeeGuarantorsController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $employeeId, $guarantorId)
-    {
-        //
-        $employee = Employee::find($employeeId);
+    { 
+        $response = Gate::inspect('update',EmployeeGuarantors::class);
+
+        if($response->allowed())
+        {
+            $employee = Employee::find($employeeId);
 
         if(!$employee)
         {
@@ -130,6 +159,9 @@ class EmployeeGuarantorsController extends Controller
         $employeeGuarantor->update($request->all());
 
         return $this->success(new EmployeeResource($employee));
+        }else {
+        return $this->error(null,$response->message(),403);
+        }
 
     }
 
@@ -143,28 +175,35 @@ class EmployeeGuarantorsController extends Controller
     {
         //
 
-        $employee = Employee::find($employeeId);
+        $response = Gate::inspect('delete', EmployeeGuarantors::class);
 
-        if(!$employee)
+        if($response->allowed())
         {
-            return $this->error(null,"employee not found",404);
+            $employee = Employee::find($employeeId);
+
+            if(!$employee)
+            {
+                return $this->error(null,"employee not found",404);
+            }
+    
+            $employeeGuarantor = EmployeeGuarantors::find($guarantorId);
+    
+            if(!$employeeGuarantor)
+            {
+                return $this->error(null,"employee guarantor not found",404);
+            }
+    
+            if($employeeGuarantor->employee_id != $employee->id)
+            {
+                return $this->error(null,"guarantor not associated with the employee",403);
+            }
+    
+            $employeeGuarantor->delete();
+    
+            $this->success(null,null,204);
+    
+        }else{
+            return $this->error(null, $response->message(), 403);
         }
-
-        $employeeGuarantor = EmployeeGuarantors::find($guarantorId);
-
-        if(!$employeeGuarantor)
-        {
-            return $this->error(null,"employee guarantor not found",404);
-        }
-
-        if($employeeGuarantor->employee_id != $employee->id)
-        {
-            return $this->error(null,"guarantor not associated with the employee",403);
-        }
-
-        $employeeGuarantor->delete();
-
-        $this->success(null,null,204);
-
     }
 }
