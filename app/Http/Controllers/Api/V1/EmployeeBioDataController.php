@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\V1\EmployeeBioDate\CreateEmployeeBioDataRequest;
+use App\Http\Requests\Api\V1\EmployeeBioDate\updateEmployeeBioDataRequest;
 use App\Http\Resources\Api\V1\EmployeeBioDataResource;
 use App\Http\Resources\Api\V1\EmployeeResource;
 use App\Models\Employee;
@@ -69,13 +71,16 @@ class EmployeeBioDataController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, $employeeId)
+    public function store(CreateEmployeeBioDataRequest $request, $employeeId)
     {
 
         $response = Gate::inspect('create',EmployeeBioData::class);
 
         if($response->allowed())
         {
+
+            $request->validated($request->all());
+
              // finding employee by employee id
         $employee = Employee::find($employeeId);
 
@@ -96,7 +101,16 @@ class EmployeeBioDataController extends Controller
         }
 
         // create employee data
-        $employee->bioData()->create($request->all());
+        $employee->bioData()->create([
+            'personal_email' => $request->personalEmail,
+            'sex' => $request->sex,
+            'date_of_birth' => $request->dateOfBirth,
+            'state_of_origin' => $request->stateOfOrigin,
+            'marital_status' => $request->maritalStatus,
+            'religion' => $request->religion,
+            'phone_number' => $request->phoneNumber,
+            'home_address' => $request->homeAddress
+        ]);
 
         // returning a json response
         return $this->success(new EmployeeResource($employee));
@@ -157,7 +171,7 @@ class EmployeeBioDataController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $employeeId, $bioDataId)
+    public function update(updateEmployeeBioDataRequest $request, $employeeId, $bioDataId)
     {
 
              // find employee by employeeid
@@ -188,8 +202,19 @@ class EmployeeBioDataController extends Controller
 
         if($response->allowed())
         {
+            $request->validated($request->all());
+
             // updating employee bio data
-        $employeeBioData->update($request->all());
+        $employeeBioData->update([
+            'personal_email' => $request->personalEmail ? $request->personalEmail : $employeeBioData->personal_email,
+            'sex' => $request->sex ? $request->sex : $employeeBioData->sex,
+            'date_of_birth' => $request->dateOfBirth ? $request->dateOfBirth : $employeeBioData->date_of_birth,
+            'state_of_origin' => $request->stateOfOrigin ? $request->stateOfOrigin : $employeeBioData->state_of_origin,
+            'marital_status' => $request->maritalStatus ? $request->maritalStatus : $employeeBioData->marital_status,
+            'religion' => $request->religion ? $request->religion : $employeeBioData->religion,
+            'phone_number' => $request->phoneNumber ? $request->phoneNumber : $employeeBioData->phone_number,
+            'home_address' => $request->homeAddress ? $request->homeAddress : $employeeBioData->home_address
+        ]);
 
         // returning a json response
         return $this->success(new EmployeeResource($employee));

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\V1\Employee\CreateEmployeeRequest;
+use App\Http\Requests\Api\V1\Employee\UpdateEmployeeRequest;
 use App\Http\Resources\Api\V1\EmployeeResource;
 use App\Models\Employee;
 use App\Models\User;
@@ -46,7 +48,7 @@ class EmployeeController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CreateEmployeeRequest $request)
     {
 
         $response = Gate::inspect('create',Employee::class);
@@ -55,10 +57,10 @@ class EmployeeController extends Controller
         {
 
             // store values from the req.body
-        $body = $request->all();
+            $request->validated($request->all());
 
         // checking if the email aleady exist in the User Model
-        $employeeUser = User::where('email',$body['email'])->first();
+        $employeeUser = User::where('email',$request->email)->first();
 
         if($employeeUser)
         {
@@ -67,24 +69,24 @@ class EmployeeController extends Controller
 
         // create user
         $newUser = User::create([
-            'name' => $body['name'],
-            'email' => $body['email'],
+            'name' => $request->name,
+            'email' => $request->email,
             'password' => Hash::make('uwelcome101')
         ]);
 
         // create a new employee and linking it with the user 
         $newEmployee = Employee::make([
-            'staff_id' => $body['staff_id'],
+            'staff_id' => $request->staffId,
             'user_id' => $newUser->id,
-            'employment_date' => $body['employment_date'],
-            'sterling_bank_email' => $body['sterling_bank_email'],
-            'position' => $body['position'],
-            'department' => $body['department'],
-            'grade' => $body['grade'],
-            'supervisor' => $body['supervisor'],
-            'bank_acct_name' => $body['bank_acct_name'],
-            'bank_acct_number' => $body['bank_acct_number'],
-            'bank_bvn' => $body['bank_bvn']
+            'employment_date' => $request->employmentDate,
+            'sterling_bank_email' => $request->sterlingBankEmail,
+            'position' => $request->position,
+            'department' => $request->department,
+            'grade' => $request->grade,
+            'supervisor' => $request->supervisor,
+            'bank_acct_name' => $request->bankAcctName,
+            'bank_acct_number' => $request->bankAcctNumber,
+            'bank_bvn' => $request->bankBvn
         ]);
 
         // saving it to the database
@@ -143,7 +145,7 @@ class EmployeeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateEmployeeRequest $request, $id)
     {
 
        
@@ -161,8 +163,29 @@ class EmployeeController extends Controller
 
         if($response->allowed())
         {
+
+            $request->validated($request->all());
+
+            $userEmployee = User::where('email',$request->email)->first();
+
+            $userEmployee->update([
+                'name' => $request->name,
+                'email' => $request->email
+            ]);
+
               // den update the employee details
-        $employee->update($request->all());
+            $employee->update([
+            'staff_id' => $request->staffId ? $request->staffId : $employee->staff_id,
+            'employment_date' => $request->employmentDate ? $request->employmentDate : $employee->employment_date,
+            'sterling_bank_email' => $request->sterlingBankEmail ? $request->sterlingBankEmail : $employee->sterling_bank_email,
+            'position' => $request->position ? $request->position : $employee->position,
+            'department' => $request->department ? $request->department : $employee->department,
+            'grade' => $request->grade ? $request->grade : $employee->grade,
+            'supervisor' => $request->supervisor ? $request->supervisor : $employee->supervisor,
+            'bank_acct_name' => $request->bankAcctName ? $request->bankAcctName : $employee->bank_acct_name,
+            'bank_acct_number' => $request->bankAcctNumber ? $request->bankAcctNumber : $employee->bank_acct_name,
+            'bank_bvn' => $request->bankBvn ? $request->bankBvn : $employee->bank_bvn 
+            ]);
 
         // return a json response
         return $this->success(new EmployeeResource($employee));   

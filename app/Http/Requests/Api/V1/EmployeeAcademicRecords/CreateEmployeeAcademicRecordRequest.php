@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Api\V1;
+namespace App\Http\Requests\Api\V1\EmployeeAcademicRecords;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class RegisterRequest extends FormRequest
+class CreateEmployeeAcademicRecordRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,7 +13,7 @@ class RegisterRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return false;
     }
 
     /**
@@ -25,10 +25,6 @@ class RegisterRequest extends FormRequest
     {
         return [
             //
-            "name" => ['required','string'],
-            "email" => ['required','unique:users,email','email'],
-            "password" => ['required','confirmed'],
-            "role" => ['required']
         ];
     }
 }
