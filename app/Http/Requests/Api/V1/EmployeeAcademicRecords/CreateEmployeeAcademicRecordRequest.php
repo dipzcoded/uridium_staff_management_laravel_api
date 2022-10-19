@@ -13,7 +13,7 @@ class CreateEmployeeAcademicRecordRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -25,6 +25,18 @@ class CreateEmployeeAcademicRecordRequest extends FormRequest
     {
         return [
             //
+            'courseOfStudy' => ['required','string'],
+            'intitution' => ['required','string'],
+            'qualification' => ['required','string'],
+            'yearOfGrad' => ['required','date_format:Y-m-d']
         ];
+    }
+
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'course_of_study' => $this->courseOfStudy,
+            'year_of_grad' => $this->yearOfGrad
+        ]);
     }
 }

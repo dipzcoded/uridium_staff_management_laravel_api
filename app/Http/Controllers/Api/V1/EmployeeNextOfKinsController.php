@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\V1\EmployeeNextOfKins\CreateEmployeeNextOfkinsRequest;
+use App\Http\Requests\Api\V1\EmployeeNextOfKins\UpdateEmployeeNextOfkinsRequest;
 use App\Http\Resources\Api\V1\EmployeeNextOfKinsResource;
 use App\Http\Resources\Api\V1\EmployeeResource;
+
 use App\Models\Employee;
 use App\Models\EmployeeNextOfKins;
 use App\Traits\HttpResponses;
@@ -54,7 +57,7 @@ class EmployeeNextOfKinsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, $employeeId)
+    public function store(CreateEmployeeNextOfkinsRequest $request, $employeeId)
     {
 
         $response = Gate::inspect('create', EmployeeNextOfKins::class);
@@ -62,6 +65,9 @@ class EmployeeNextOfKinsController extends Controller
         if($response->allowed())
         {
              //
+
+             $request->validated($request->all());
+
         $employee = Employee::find($employeeId);
 
         if(!$employee)
@@ -69,7 +75,11 @@ class EmployeeNextOfKinsController extends Controller
             return $this->error(null,"employee not found",404);
         }
 
-        $employee->nextOfKins()->create($request->all());
+        $employee->nextOfKins()->create([
+            'name' => $request->name,
+            'phone_number' => $request->phoneNumber,
+            'nin' => $request->nin
+        ]);
 
         return $this->success(new EmployeeResource($employee));
 
@@ -123,13 +133,16 @@ class EmployeeNextOfKinsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $employeeId, $nextOfKinsId)
+    public function update(UpdateEmployeeNextOfkinsRequest $request, $employeeId, $nextOfKinsId)
     {
         //
 
         $response = Gate::inspect('update',EmployeeNextOfKins::class);
 
         if($response->allowed()){
+
+            $request->validated($request->all());
+
             $employee = Employee::find($employeeId);
 
             if(!$employee)
@@ -147,7 +160,11 @@ class EmployeeNextOfKinsController extends Controller
                 return $this->error(null,"guarantor is not meant for employee",403);
             }
     
-            $employeeNextOfKin->update($request->all());
+            $employeeNextOfKin->update([
+                'name' => $request->name ? $request->name : $employeeNextOfKin->name,
+                'phone_number' => $request->phoneNumber ? $request->phoneNumber : $employeeNextOfKin->phone_number,
+                'nin' => $request->nin ? $request->nin : $employeeNextOfKin->nin
+            ]);
             
             return $this->success(new EmployeeResource($employee));
         }else{

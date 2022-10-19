@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Api\V1\EmployeeAcademicRecords;
+namespace App\Http\Requests\Api\V1\EmployeeGuarantors;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateEmployeeAcademicRecordRequest extends FormRequest
+class CreateEmployeeGuarantorRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -16,7 +16,7 @@ class UpdateEmployeeAcademicRecordRequest extends FormRequest
         return true;
     }
 
-    /**
+   /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, mixed>
@@ -25,18 +25,16 @@ class UpdateEmployeeAcademicRecordRequest extends FormRequest
     {
         return [
             //
-            'courseOfStudy' => ['sometimes','required','string'],
-            'intitution' => ['sometimes','required','string'],
-            'qualification' => ['sometimes','required','string'],
-            'yearOfGrad' => ['sometimes','required','date_format:Y-m-d']
+            'name' => ['required','string'],
+            'phoneNumber' => ['required','string'],
+            'nin' => ['required','string']
         ];
     }
 
     protected function prepareForValidation()
     {
         $this->merge([
-            'course_of_study' => $this->courseOfStudy,
-            'year_of_grad' => $this->yearOfGrad
+            'phone_number' => $this->phoneNumber
         ]);
     }
 }

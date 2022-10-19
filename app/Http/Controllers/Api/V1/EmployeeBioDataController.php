@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\EmployeeBioDate\CreateEmployeeBioDataRequest;
-use App\Http\Requests\Api\V1\EmployeeBioDate\updateEmployeeBioDataRequest;
+use App\Http\Requests\Api\V1\EmployeeBioDate\UpdateEmployeeBioDataRequest;
 use App\Http\Resources\Api\V1\EmployeeBioDataResource;
 use App\Http\Resources\Api\V1\EmployeeResource;
 use App\Models\Employee;
@@ -171,7 +171,7 @@ class EmployeeBioDataController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(updateEmployeeBioDataRequest $request, $employeeId, $bioDataId)
+    public function update(UpdateEmployeeBioDataRequest $request, $employeeId, $bioDataId)
     {
 
              // find employee by employeeid

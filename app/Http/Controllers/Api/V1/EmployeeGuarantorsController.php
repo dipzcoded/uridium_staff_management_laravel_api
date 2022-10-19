@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\V1\EmployeeGuarantors\CreateEmployeeGuarantorRequest;
+use App\Http\Requests\Api\V1\EmployeeGuarantors\UpdateEmployeeGuarantorRequest;
 use App\Http\Resources\Api\V1\EmployeeGuarantorsResource;
 use App\Http\Resources\Api\V1\EmployeeResource;
 use App\Models\Employee;
 use App\Models\EmployeeGuarantors;
 use App\Traits\HttpResponses;
+use Illuminate\Auth\Events\Validated;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
@@ -57,13 +60,16 @@ class EmployeeGuarantorsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, $employeeId)
+    public function store(CreateEmployeeGuarantorRequest $request, $employeeId)
     {
 
         $response = Gate::inspect('create',EmployeeGuarantors::class);
 
         if($response->allowed())
         {
+
+            $request->validated($request->all());
+
              // finding employee by employeeId param
         $employee = Employee::find($employeeId);
 
@@ -74,7 +80,11 @@ class EmployeeGuarantorsController extends Controller
         }
 
         // storing the employee guarantor
-        $employee->guarantors()->create($request->all());
+        $employee->guarantors()->create([
+            'name' => $request->name,
+            'phone_number' => $request->phoneNumber,
+            'nin' => $request->nin
+        ]);
 
         // returning json response
         return $this->success(new EmployeeResource($employee));
@@ -131,12 +141,14 @@ class EmployeeGuarantorsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $employeeId, $guarantorId)
+    public function update(UpdateEmployeeGuarantorRequest $request, $employeeId, $guarantorId)
     { 
         $response = Gate::inspect('update',EmployeeGuarantors::class);
 
         if($response->allowed())
         {
+            $request->validated($request->all());   
+
             $employee = Employee::find($employeeId);
 
         if(!$employee)
@@ -156,7 +168,11 @@ class EmployeeGuarantorsController extends Controller
             return $this->error(null,"guarantor not associated with the employee",403);
         }
 
-        $employeeGuarantor->update($request->all());
+        $employeeGuarantor->update([
+            'name' => $request->name ? $request->name : $employeeGuarantor->name,
+            'phone_number' => $request->phoneNumber ? $request->phoneNumber : $employeeGuarantor->phone_number,
+            'nin' => $request->nin ? $request->nin : $employeeGuarantor->nin
+        ]);
 
         return $this->success(new EmployeeResource($employee));
         }else {

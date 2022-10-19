@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\V1\EmployeeAcademicRecords\CreateEmployeeAcademicRecordRequest;
+use App\Http\Requests\Api\V1\EmployeeAcademicRecords\UpdateEmployeeAcademicRecordRequest;
 use App\Http\Resources\Api\V1\EmployeeAcademicRecordsResource;
 use App\Http\Resources\Api\V1\EmployeeResource;
 use App\Models\Employee;
@@ -56,13 +58,16 @@ class EmployeeAcademicRecordsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, $employeeId)
+    public function store(CreateEmployeeAcademicRecordRequest $request, $employeeId)
     {
 
         $response = Gate::inspect('create',EmployeeAcademicRecords::class);
 
         if($response->allowed())
         {
+
+        $request->validated($request->all());
+
              // finding the employee by employeeId param
         $employee = Employee::find($employeeId);
 
@@ -73,7 +78,12 @@ class EmployeeAcademicRecordsController extends Controller
         }
 
         // storing the employee academic records to the database
-        $employee->academicRecords()->create($request->all());
+        $employee->academicRecords()->create([
+            'course_of_study' => $request->courseOfStudy,
+            'intitution' => $request->intitution,
+            'qualification' => $request->qualification,
+            'year_of_grad' => $request->yearOfGrad
+        ]);
 
         // returning a json response
         return $this->success(new EmployeeResource($employee));
@@ -137,12 +147,14 @@ class EmployeeAcademicRecordsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $employeeId, $academicRecordId)
+    public function update(UpdateEmployeeAcademicRecordRequest $request, $employeeId, $academicRecordId)
     {
         $response = Gate::inspect('update',EmployeeAcademicRecords::class);
 
         if($response->allowed())
         {
+
+            $request->validated($request->all());
 
              // finding employee by employeeId param
         $employee = Employee::find($employeeId);
@@ -169,7 +181,12 @@ class EmployeeAcademicRecordsController extends Controller
         }
 
         // updating the employee academic record 
-        $employeeAcademicRecord->update($request->all());
+        $employeeAcademicRecord->update([
+            'course_of_study' => $request->courseOfStudy ? $request->courseOfStudy : $employeeAcademicRecord->course_of_study,
+            'intitution' => $request->intitution ? $request->intitution : $employeeAcademicRecord->intitution,
+            'qualification' => $request->qualification ? $request->qualification : $employeeAcademicRecord->qualification,
+            'year_of_grad' => $request->yearOfGrad ? $request->yearOfGrad : $employeeAcademicRecord->year_of_grad
+        ]);
 
         // returning json response
         return $this->success(new EmployeeResource($employee));
