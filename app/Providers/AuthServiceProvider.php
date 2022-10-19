@@ -9,11 +9,13 @@ use App\Models\EmployeeAcademicRecords;
 use App\Models\EmployeeBioData;
 use App\Models\EmployeeGuarantors;
 use App\Models\EmployeeNextOfKins;
+use App\Models\User;
 use App\Policies\Api\V1\EmployeeAcademicRecordsPolicy;
 use App\Policies\Api\V1\EmployeeBioDataPolicy;
 use App\Policies\Api\V1\EmployeeGuarantorsPolicy;
 use App\Policies\Api\V1\EmployeeNextOfKinsPolicy;
 use App\Policies\Api\V1\EmployeePolicy;
+use App\Policies\Api\V1\UserAsEmployeePolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
@@ -29,7 +31,8 @@ class AuthServiceProvider extends ServiceProvider
         EmployeeAcademicRecords::class => EmployeeAcademicRecordsPolicy::class,
         EmployeeBioData::class => EmployeeBioDataPolicy::class,
         EmployeeGuarantors::class => EmployeeGuarantorsPolicy::class,
-        EmployeeNextOfKins::class => EmployeeNextOfKinsPolicy::class
+        EmployeeNextOfKins::class => EmployeeNextOfKinsPolicy::class,
+        User::class => UserAsEmployeePolicy::class
     ];
 
     /**

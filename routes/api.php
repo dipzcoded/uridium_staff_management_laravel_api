@@ -6,6 +6,9 @@ use App\Http\Controllers\Api\V1\EmployeeBioDataController;
 use App\Http\Controllers\Api\V1\EmployeeController;
 use App\Http\Controllers\Api\V1\EmployeeGuarantorsController;
 use App\Http\Controllers\Api\V1\EmployeeNextOfKinsController;
+use App\Http\Controllers\Api\V1\UserAsEmployeeController;
+use App\Http\Resources\Api\V1\EmployeeUserResource;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,11 +23,6 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::prefix('v1')->name('api.v1.')->group(function(){
-    // Test Routes
-    Route::get('/test', function(){
-        return response()->json(['status' => 'OK'],200);
-    })->name('test');
-
     // Employee Routes
     Route::apiResource('employee',EmployeeController::class);
 
@@ -40,10 +38,20 @@ Route::prefix('v1')->name('api.v1.')->group(function(){
     // Employee Guarantors Routes
     Route::apiResource('employee.guarantors',EmployeeGuarantorsController::class);
 
+    // User Logged in As Employee Routes
+    Route::get('user/employee',[UserAsEmployeeController::class,'index']);
+
+
     // Auth Routes
+    Route::get('/auth/current/me',function(Request $request){
+        return new EmployeeUserResource($request->user());
+    })->middleware('auth:sanctum');
+
     Route::post('auth/register/admin',[AuthController::class,'register']);
     Route::post('auth/login',[AuthController::class,'login']);
     Route::post("auth/logout",[AuthController::class,'logout']);
+
+    
 });
 
 Route::fallback(function()
