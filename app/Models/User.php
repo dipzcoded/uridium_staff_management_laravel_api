@@ -50,5 +50,10 @@ class User extends Authenticatable
     {
         return $this->hasOne(Employee::class,'userId','id');
     }
+
+    public function profileImage()
+    {
+        return $this->hasOne(Image::class);
+    }
    
 }

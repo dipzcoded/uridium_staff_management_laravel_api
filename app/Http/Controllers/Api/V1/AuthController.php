@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\V1\Auth\ChangePasswordRequest;
 use App\Http\Requests\Api\V1\Auth\LoginRequest;
 use App\Http\Requests\Api\V1\Auth\RegisterRequest;
 use App\Models\User;
@@ -17,7 +18,7 @@ class AuthController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth:sanctum')->only(['logout']);
+        $this->middleware('auth:sanctum')->only(['logout','changePassword']);
     }
 
 
@@ -84,4 +85,27 @@ class AuthController extends Controller
         ]);
     }
 
+    public function changePassword(ChangePasswordRequest $request)
+    {
+        $request->validated($request->all());
+
+        $user = User::find($request->user()->id);
+        $user->makeVisible(['password']);
+        
+        if($user)
+        {
+            if(Hash::check($request->oldPassword,$user->password))
+            {
+                $user->password = Hash::make($request->newPassword);
+                $user->save();
+                $user->makeHidden(['password']);
+                return $this->success($user,"password updated succesfully");
+            }else {
+                return $this->error(null,"old password didnt match",403);
+            }
+        }else{
+            return $this->error(null,"user not found",404);
+        }
+
+    }
 }

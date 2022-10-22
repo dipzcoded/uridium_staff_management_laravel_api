@@ -37,4 +37,5 @@ class Employee extends Model
     {
         return $this->hasMany(EmployeeGuarantors::class);
     }
+
 }

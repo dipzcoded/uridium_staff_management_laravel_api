@@ -6,7 +6,7 @@ use App\Http\Resources\Api\V1\EmployeeBioDataResource;
 use App\Http\Resources\Api\V1\EmployeeAcademicRecordsResource;
 use App\Http\Resources\Api\V1\EmployeeNextOfKinsResource;
 use App\Http\Resources\Api\V1\EmployeeGuarantorsResource;
-use App\Http\Resources\Api\V1\EmployeeUserResource;
+use App\Http\Resources\Api\V1\UserResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class EmployeeResource extends JsonResource
@@ -38,7 +38,7 @@ class EmployeeResource extends JsonResource
                 'updatedAt' => $this->updated_at
             ],
             'relationships' => [
-                'user' => new EmployeeUserResource($this->user),
+                'user' => new UserResource($this->user),
                 'bioData' => new EmployeeBioDataResource($this->bioData),
                 'academicRecords' => EmployeeAcademicRecordsResource::collection($this->academicRecords),
                 'nextOfKins' => EmployeeNextOfKinsResource::collection($this->nextOfKins),

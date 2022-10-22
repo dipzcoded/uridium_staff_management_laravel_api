@@ -6,8 +6,9 @@ use App\Http\Controllers\Api\V1\EmployeeBioDataController;
 use App\Http\Controllers\Api\V1\EmployeeController;
 use App\Http\Controllers\Api\V1\EmployeeGuarantorsController;
 use App\Http\Controllers\Api\V1\EmployeeNextOfKinsController;
+use App\Http\Controllers\Api\V1\ImageController;
 use App\Http\Controllers\Api\V1\UserAsEmployeeController;
-use App\Http\Resources\Api\V1\EmployeeUserResource;
+use App\Http\Resources\Api\V1\UserResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -44,13 +45,17 @@ Route::prefix('v1')->name('api.v1.')->group(function(){
 
     // Auth Routes
     Route::get('/auth/current/me',function(Request $request){
-        return new EmployeeUserResource($request->user());
+        return new UserResource($request->user());
     })->middleware('auth:sanctum');
 
     Route::post('auth/register/admin',[AuthController::class,'register']);
     Route::post('auth/login',[AuthController::class,'login']);
     Route::post("auth/logout",[AuthController::class,'logout']);
+    Route::post('auth/user/change-password', [AuthController::class,'changePassword']);
+    
 
+    // Image
+    Route::post('/user/profile/image-upload',[ImageController::class,'userProfileImage']);
     
 });
 
