@@ -32,7 +32,8 @@ class UpdateEmployeeBioDataRequest extends FormRequest
             'maritalStatus' => ['sometimes','required','string'],
             'religion' => ['sometimes','required','string'],
             'phoneNumber' => ['sometimes','required','string'],
-            'homeAddress' => ['sometimes','required','string']
+            'homeAddress' => ['sometimes','required','string'],
+            'nin' => ['sometimes','required','string']
         ];
     }
 

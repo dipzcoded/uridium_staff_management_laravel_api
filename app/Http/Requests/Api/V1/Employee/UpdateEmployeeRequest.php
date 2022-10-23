@@ -27,7 +27,7 @@ class UpdateEmployeeRequest extends FormRequest
             //
              //
              'name' => ['sometimes','required','string'],
-             'email' => ['sometimes','required','email'],
+             'personalEmail' => ['sometimes','required','email'],
              'staffId' => ['sometimes','required','string'],
              'employmentDate' => ['sometimes','required','date_format:Y-m-d'],
              'sterlingBankEmail' => ['sometimes','required','email'],

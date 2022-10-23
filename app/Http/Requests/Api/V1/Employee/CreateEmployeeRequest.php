@@ -26,7 +26,7 @@ class CreateEmployeeRequest extends FormRequest
         return [
             //
             'name' => ['required','string'],
-            'email' => ['required','email'],
+            'personalEmail' => ['required','email'],
             'staffId' => ['required','string'],
             'employmentDate' => ['required','date_format:Y-m-d'],
             'sterlingBankEmail' => ['required','email'],

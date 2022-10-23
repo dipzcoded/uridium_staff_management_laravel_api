@@ -109,7 +109,8 @@ class EmployeeBioDataController extends Controller
             'marital_status' => $request->maritalStatus,
             'religion' => $request->religion,
             'phone_number' => $request->phoneNumber,
-            'home_address' => $request->homeAddress
+            'home_address' => $request->homeAddress,
+            'nin' => $request->nin
         ]);
 
         // returning a json response
@@ -213,7 +214,8 @@ class EmployeeBioDataController extends Controller
             'marital_status' => $request->maritalStatus ? $request->maritalStatus : $employeeBioData->marital_status,
             'religion' => $request->religion ? $request->religion : $employeeBioData->religion,
             'phone_number' => $request->phoneNumber ? $request->phoneNumber : $employeeBioData->phone_number,
-            'home_address' => $request->homeAddress ? $request->homeAddress : $employeeBioData->home_address
+            'home_address' => $request->homeAddress ? $request->homeAddress : $employeeBioData->home_address,
+            'nin' => $request->nin ? $request->nin : $employeeBioData->nin
         ]);
 
         // returning a json response

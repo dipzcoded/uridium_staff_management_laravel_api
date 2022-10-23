@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\V1\Employee\BulkCreateEmployeeDetailsRequest;
 use App\Http\Requests\Api\V1\Employee\CreateEmployeeRequest;
 use App\Http\Requests\Api\V1\Employee\UpdateEmployeeRequest;
 use App\Http\Resources\Api\V1\EmployeeResource;
@@ -60,7 +61,7 @@ class EmployeeController extends Controller
             $request->validated($request->all());
 
         // checking if the email aleady exist in the User Model
-        $employeeUser = User::where('email',$request->email)->first();
+        $employeeUser = User::where('email',$request->personalEmail)->first();
 
         if($employeeUser)
         {
@@ -70,7 +71,7 @@ class EmployeeController extends Controller
         // create user
         $newUser = User::create([
             'name' => $request->name,
-            'email' => $request->email,
+            'email' => $request->personalEmail,
             'password' => Hash::make('uwelcome101')
         ]);
 
@@ -147,9 +148,6 @@ class EmployeeController extends Controller
      */
     public function update(UpdateEmployeeRequest $request, $id)
     {
-
-       
-
         // Find user by id 
         $employee = Employee::find($id);
 
@@ -166,11 +164,11 @@ class EmployeeController extends Controller
 
             $request->validated($request->all());
 
-            $userEmployee = User::where('email',$request->email)->first();
+            $userEmployee = User::where('email',$request->personalEmail)->first();
 
             $userEmployee->update([
-                'name' => $request->name,
-                'email' => $request->email
+                'name' => $request->name ? $request->name : $userEmployee->name,
+                'email' => $request->personalEmail ? $request->personalEmail : $userEmployee->email
             ]);
 
               // den update the employee details
@@ -287,4 +285,64 @@ class EmployeeController extends Controller
             return $this->error(null,$response->message(),403);
         }
     }
+
+    public function bulkUpload(BulkCreateEmployeeDetailsRequest $request){
+        
+        $validated = $request->validated();
+
+        for ($i=0; $i < count($validated) ; $i++) { 
+            # code...
+
+            // find user by email
+            $userFound = User::where('email',$validated[$i]['personalEmail'])->first();
+
+            if(!$userFound)
+            {
+                 // create a user
+            $newUser = new User();
+            $newUser->name = $validated[$i]['staffName'];
+            $newUser->email = $validated[$i]['personalEmail'];
+            $newUser->password = Hash::make("uwelcome101");
+
+            // save user to database
+            $newUser->save();
+
+            // create employee
+           $newEmployee = Employee::make([
+            'staff_id' => $validated[$i]['staffId'],
+            'user_id' => $newUser->id,
+            'employment_date' => $validated[$i]['employmentDate'],
+            'sterling_bank_email' => $validated[$i]['sterlingBankEmail'],
+            'position' => $validated[$i]['position'],
+            'department' => $validated[$i]['department'],
+            'grade' => $validated[$i]['grade'],
+            'supervisor' => $validated[$i]['supervisor'],
+            'bank_acct_name' => $validated[$i]['bankAcctName'],
+            'bank_acct_number' => $validated[$i]['bankAcctNumber'],
+            'bank_bvn' => $validated[$i]['bankBvn']
+           ]);
+
+        //    save employee to database
+           $newEmployee->save();
+
+        //    create employee biodata
+        $newEmployee->bioData()->create([
+            'nin' => $validated[$i]['nin'],
+            'sex' => $validated[$i]['sex'],
+            'date_of_birth' => $validated[$i]['dateOfBirth'],
+            'state_of_origin' => $validated[$i]['stateOfOrigin'],
+            'marital_status' => $validated[$i]['maritalStatus'],
+            'religion' => $validated[$i]['religion'],
+            'phone_number' => $validated[$i]['phoneNumber'],
+            'home_address' => $validated[$i]['homeAddress'],
+            'personal_email' => $newUser->email
+        ]);
+            }
+
+        }
+      
+       return $this->success(null,"bulk upload successfully");
+    }
 }
+
+

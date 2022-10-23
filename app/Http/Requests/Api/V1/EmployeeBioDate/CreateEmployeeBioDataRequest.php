@@ -32,7 +32,8 @@ class CreateEmployeeBioDataRequest extends FormRequest
             'maritalStatus' => ['required','string'],
             'religion' => ['required','string'],
             'phoneNumber' => ['required','string'],
-            'homeAddress' => ['required','string']
+            'homeAddress' => ['required','string'],
+            'nin' => ['required','string']
         ];
     }
 
